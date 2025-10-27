@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+.container {
+    max-width: 450px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 25px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+h1 {
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+.form-group label {
+    display: inline-block;
+    width: 130px; 
+    color: #555;
+}
+.form-group input[type="number"] {
+    width: calc(100% - 140px); 
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.form-group-check {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+.form-group-check label {
+    width: 130px;
+    color: #555;
+}
+.form-group-check input[type="checkbox"] {
+    margin: 0 5px 0 0;
+}
+.form-buttons {
+    display: flex;
+    gap: 10px; 
+    margin-left: 130px; 
+}
+.form-buttons button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.form-buttons button:hover {
+    background-color: #e0e0e0;
+}
+.hasil {
+    margin-top: 25px;
+    border-top: 2px dashed #eee;
+    padding-top: 20px;
+}
+.hasil h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+.hasil p {
+    margin: 8px 0;
+    display: flex;
+}
+.hasil p span {
+    display: inline-block;
+    width: 130px;
+    font-weight: normal;
+    color: #555;
+}
