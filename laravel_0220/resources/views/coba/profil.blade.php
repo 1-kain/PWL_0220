@@ -1,0 +1,1 @@
+<h1>Halam Profil {{ $namaOrang }} dari Blade</h1>
