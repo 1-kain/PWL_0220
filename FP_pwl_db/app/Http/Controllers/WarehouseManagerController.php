@@ -200,7 +200,13 @@ class WarehouseManagerController extends Controller
     }
 
     public function storeTransaction(Request $request, $id, $type) {
-        // Cari produk berdasarkan nama atau kode di gudang ini
+        $request->validate([
+            'product_ref' => 'required',
+            'quantity' => 'required|integer|min:1',
+            'date' => 'required|date'
+        ]);
+
+        // 1. Cari Produk
         $product = Product::where('warehouse_id', $id)
                     ->where(function($q) use ($request) {
                         $q->where('code', $request->product_ref)
@@ -208,9 +214,16 @@ class WarehouseManagerController extends Controller
                     })->first();
 
         if(!$product) {
-            return back()->with('error', 'Barang tidak ditemukan! Pastikan nama/kode benar.');
+            return back()->with('error', 'Barang tidak ditemukan! Cek kembali nama/kode.');
         }
 
+        // 2. VALIDASI STOK (Cegah Minus)
+        // Jika tipe 'out' (Keluar) DAN jumlah minta > stok saat ini
+        if ($type == 'out' && $request->quantity > $product->current_stock) {
+            return back()->with('error', "Gagal! Stok tidak cukup. Sisa stok: {$product->current_stock}, Permintaan: {$request->quantity}");
+        }
+
+        // 3. Simpan Transaksi
         Transaction::create([
             'product_id' => $product->id,
             'type' => $type,
@@ -275,11 +288,24 @@ class WarehouseManagerController extends Controller
 
     public function updateTransaction(Request $request, $warehouseId, $trxId) {
         $transaction = Transaction::findOrFail($trxId);
-        
+        $product = $transaction->product;
+
         $request->validate([
             'quantity' => 'required|integer|min:1',
             'date' => 'required|date'
         ]);
+
+        // LOGIKA VALIDASI EDIT STOK
+        // Kita harus hitung: Jika transaksi ini diubah, apakah stok akhirnya bakal minus?
+        if ($transaction->type == 'out') {
+            // Kembalikan stok lama dulu secara mental (Virtual Calculation)
+            $virtualStock = $product->current_stock + $transaction->quantity;
+            
+            // Cek apakah stok virtual cukup untuk quantity baru
+            if ($request->quantity > $virtualStock) {
+                return back()->with('error', "Gagal Update! Stok tidak mencukupi untuk perubahan ini. Maksimal: {$virtualStock}");
+            }
+        }
 
         $transaction->update([
             'quantity' => $request->quantity,
@@ -288,8 +314,6 @@ class WarehouseManagerController extends Controller
             'remarks' => $request->remarks
         ]);
         
-        // Stok produk akan otomatis terupdate berkat logic di Model Transaction
-
         return redirect()->route('w.transactions', [$warehouseId, $transaction->type])
                          ->with('success', 'Transaksi berhasil diedit & stok diperbarui');
     }
@@ -301,5 +325,13 @@ class WarehouseManagerController extends Controller
         
         return redirect()->route('w.transactions', [$warehouseId, $type])
                          ->with('success', 'Transaksi dihapus & stok dikembalikan');
+    }
+
+    // --- TAMBAHAN: HAPUS ATRIBUT KUSTOM ---
+    public function destroyAttribute($warehouseId, $attrId) {
+        $attr = CustomAttribute::where('warehouse_id', $warehouseId)->findOrFail($attrId);
+        $attr->delete();
+        
+        return back()->with('success', 'Atribut berhasil dihapus. Kolom tersebut tidak akan muncul lagi di form.');
     }
 }

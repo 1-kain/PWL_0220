@@ -45,4 +45,9 @@ Route::prefix('warehouse/{id}')->group(function(){
     
     // TAMBAHAN: Route Hapus Barang
     Route::delete('/products/{productId}', [WarehouseManagerController::class, 'destroyProduct'])->name('w.products.delete');
+
+    Route::post('/attribute', [WarehouseManagerController::class, 'storeAttribute'])->name('w.attribute.store');
+    
+    // TAMBAHAN: Route Hapus Atribut
+    Route::delete('/attribute/{attrId}', [WarehouseManagerController::class, 'destroyAttribute'])->name('w.attribute.delete');
 });
