@@ -27,6 +27,14 @@
                     Laporan (VIP)
                 </a>
             </nav>
+            <div class="mt-10 px-6">
+    <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button type="submit" class="w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition font-medium">
+            Keluar (Logout)
+        </button>
+    </form>
+</div>
         </aside>
 
         <main class="flex-1 flex flex-col overflow-hidden">
