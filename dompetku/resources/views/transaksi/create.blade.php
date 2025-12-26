@@ -20,6 +20,16 @@
         <form action="{{ url('/transaksi') }}" method="POST">
             @csrf 
             <div class="space-y-5">
+                <div class="mb-3">
+    <label>Pilih Kategori</label>
+    <select name="kategori_id" class="form-control">
+        <option value="">-- Tanpa Kategori --</option>
+        @foreach($kategoris as $kat)
+            <option value="{{ $kat->id }}">{{ $kat->nama_kategori }}</option>
+        @endforeach
+    </select>
+</div>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan Transaksi</label>
                     <input type="text" name="keterangan" value="{{ old('keterangan') }}" 

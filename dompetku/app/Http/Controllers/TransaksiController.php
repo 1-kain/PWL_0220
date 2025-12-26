@@ -2,91 +2,78 @@
 
 namespace App\Http\Controllers;
 
-// use App\Http\Controllers\Controller;
+use App\Models\Transaksi;
+use App\Models\Kategori; // Penting untuk Soal 3
 use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
 {
-    // Menampilkan halaman Dashboard
-    public function index()
-    {
-        // Simulasi Data Transaksi (Array Statis)
-        // Nantinya ini diambil dari Database
-        $transaksi = [
-            [
-                'id' => 1,
-                'keterangan' => 'Gaji Bulanan',
-                'nominal' => 5000000,
-                'jenis' => 'pemasukan',
-                'tanggal' => '2023-10-01'
-            ],
-            [
-                'id' => 2,
-                'keterangan' => 'Bayar Listrik',
-                'nominal' => 350000,
-                'jenis' => 'pengeluaran',
-                'tanggal' => '2023-10-05'
-            ],
-            [
-                'id' => 3,
-                'keterangan' => 'Beli Kopi',
-                'nominal' => 25000,
-                'jenis' => 'pengeluaran',
-                'tanggal' => '2023-10-06'
-            ],
-        ];
+    // Menampilkan Dashboard dengan Pencarian & Pagination (Soal 2)
+    public function index(Request $request) {
+        $query = Transaksi::with('kategori'); // Eager loading relasi
 
-        // Hitung total saldo sederhana
-        $totalPemasukan = 5000000;
-        $totalPengeluaran = 375000;
-        $saldo = $totalPemasukan - $totalPengeluaran;
+        if ($request->has('search')) {
+            $query->where('keterangan', 'like', '%' . $request->search . '%');
+        }
+
+        // Menggunakan paginate(10) bukan get() agar tidak lag [cite: 145]
+        $transaksi = $query->orderBy('tanggal', 'desc')->paginate(10);
+
+        $totalPemasukan = Transaksi::where('jenis', 'pemasukan')->sum('nominal');
+        $totalPengeluaran = Transaksi::where('jenis', 'pengeluaran')->sum('nominal');
 
         return view('transaksi.index', [
             'dataTransaksi' => $transaksi,
-            'saldo' => $saldo,
             'pemasukan' => $totalPemasukan,
-            'pengeluaran' => $totalPengeluaran
+            'pengeluaran' => $totalPengeluaran,
+            'saldo' => $totalPemasukan - $totalPengeluaran
         ]);
     }
 
-    // Menampilkan Form Tambah Data
-    public function create()
-    {
-        return view('transaksi.create');
+    // Menampilkan Form Tambah (PENTING: Jangan dihapus/dilewati) [cite: 118]
+    public function create() {
+        $kategoris = Kategori::all(); // Ambil data untuk dropdown [cite: 156]
+        return view('transaksi.create', compact('kategoris'));
     }
 
-    // Memproses Data Input (Request & Validation)
-    public function store(Request $request)
-    {
-        // 1. Validasi Input
+    // Menyimpan data baru ke DB (Latihan 11.4.5) [cite: 120]
+    public function store(Request $request) {
         $validated = $request->validate([
-            'keterangan' => 'required|min:5|max:100',
+            'keterangan' => 'required|string|max:255',
             'nominal' => 'required|numeric|min:1000',
             'jenis' => 'required|in:pemasukan,pengeluaran',
-            'tanggal' => 'required|date'
+            'tanggal' => 'required|date',
+            'kategori_id' => 'nullable|exists:kategoris,id'
         ]);
 
-        // 2. Logika Penyimpanan (Simulasi)
-        // Karena belum ada DB, kita akan me-redirect dengan pesan sukses.
-        // Di modul 11, kode ini diganti dgn: Transaksi::create($validated);
-        
-        // 3. Response Redirect
-        return redirect('/')->with('success', 'Data transaksi berhasil ditambahkan (Simulasi)!');
+        Transaksi::create($validated);
+        return redirect('/')->with('success', 'Transaksi berhasil disimpan!');
     }
 
-    public function laporan(Request $request)
-    {
-        // Cek parameter VIP (sesuai praktikum sebelumnya)
-        if ($request->query('type') !== 'vip') {
-            return redirect('/')->with('error', 'Akses Ditolak! Fitur khusus VIP.');
-        }
+    // Menampilkan Form Edit (Soal 1) [cite: 138]
+    public function edit($id) {
+        $transaksi = Transaksi::findOrFail($id);
+        $kategoris = Kategori::all();
+        return view('transaksi.edit', compact('transaksi', 'kategoris'));
+    }
 
-        $chartData = [
-            'labels' => ['Pemasukan', 'Pengeluaran', 'Tabungan'],
-            'data'   => [5000000, 3500000, 1500000],
-        ];
+    // Memperbarui data (Soal 1) [cite: 139]
+    public function update(Request $request, $id) {
+        $validated = $request->validate([
+            'keterangan' => 'required',
+            'nominal' => 'required|numeric',
+            'jenis' => 'required|in:pemasukan,pengeluaran',
+            'tanggal' => 'required|date',
+            'kategori_id' => 'nullable|exists:kategoris,id'
+        ]);
 
-        // Perhatikan bagian 'laporan' ini
-        return view('laporan', compact('chartData'));
+        Transaksi::findOrFail($id)->update($validated);
+        return redirect('/')->with('success', 'Data berhasil diperbarui!');
+    }
+
+    // Menghapus data (Soal 1) [cite: 142]
+    public function destroy($id) {
+        Transaksi::findOrFail($id)->delete();
+        return redirect('/')->with('success', 'Data berhasil dihapus!');
     }
 }

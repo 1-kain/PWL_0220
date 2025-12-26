@@ -60,7 +60,7 @@
             data: {
                 labels: ['Pemasukan', 'Pengeluaran', 'Tabungan'],
                 datasets: [{
-                    data: [5000000, 3500000, 1500000], // Silakan ganti dengan data dinamis dari Controller nanti
+                    data: [{{ $pemasukan }}, {{ $pengeluaran }}, {{ $tabungan }}], // Silakan ganti dengan data dinamis dari Controller nanti
                     backgroundColor: [
                         '#10b981', // Emerald 500 (Pemasukan)
                         '#f43f5e', // Rose 500 (Pengeluaran)
