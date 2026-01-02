@@ -18,6 +18,28 @@
         <h3 class="text-sm font-medium text-rose-500 uppercase tracking-wider">Pengeluaran</h3>
         <p class="mt-2 text-3xl font-bold text-rose-600">- Rp {{ number_format($pengeluaran, 0, ',', '.') }}</p>
     </div>
+</div> <div class="mb-6">
+    <form action="{{ url('/') }}" method="GET" class="flex gap-2">
+        <input type="text" 
+               name="search" 
+               value="{{ request('search') }}" 
+               placeholder="Cari transaksi (keterangan)..." 
+               class="w-full md:w-80 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+        
+        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+            Cari
+        </button>
+
+        @if(request('search'))
+            <a href="{{ url('/') }}" class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center px-4">
+                Reset
+            </a>
+        @endif
+    </form>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
