@@ -26,4 +26,6 @@ Route::middleware([\App\Http\Middleware\CekSudahLogin::class])->group(function (
 
     // Rute Laporan (SOAL 4) - Diubah agar memanggil Controller
     Route::get('/laporan', [LaporanController::class, 'index'])->middleware(CekTipeUser::class);
+
+    Route::post('/kategori', [App\Http\Controllers\KategoriController::class, 'store']);
 });

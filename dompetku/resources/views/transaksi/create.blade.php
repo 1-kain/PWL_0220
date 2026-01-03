@@ -20,15 +20,19 @@
         <form action="{{ url('/transaksi') }}" method="POST">
             @csrf 
             <div class="space-y-5">
-                <div class="mb-3">
-    <label>Pilih Kategori</label>
-    <select name="kategori_id" class="form-control">
-        <option value="">-- Tanpa Kategori --</option>
-        @foreach($kategoris as $kat)
-            <option value="{{ $kat->id }}">{{ $kat->nama_kategori }}</option>
-        @endforeach
-    </select>
-</div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Kategori</label>
+                    <select name="kategori_id" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border">
+                        <option value="">-- Tanpa Kategori --</option>
+                        @foreach($kategoris as $kat)
+                            <option value="{{ $kat->id }}" {{ old('kategori_id') == $kat->id ? 'selected' : '' }}>
+                                {{ $kat->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-gray-400 mt-1 italic">*Kategori belum ada? Tambahkan di kotak bawah.</p>
+                </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan Transaksi</label>
@@ -37,7 +41,7 @@
                         placeholder="Contoh: Beli Nasi Goreng">
                 </div>
 
-                <div class="grid grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
                         <input type="number" name="nominal" value="{{ old('nominal') }}" 
@@ -47,7 +51,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                        <input type="date" name="tanggal" value="{{ old('tanggal') }}" 
+                        <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" 
                             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5 border">
                     </div>
                 </div>
@@ -60,7 +64,7 @@
                             <span class="ml-2 text-sm text-gray-700">Pemasukan</span>
                         </label>
                         <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 w-full">
-                            <input type="radio" name="jenis" value="pengeluaran" class="text-indigo-600 focus:ring-indigo-500">
+                            <input type="radio" name="jenis" value="pengeluaran" checked class="text-indigo-600 focus:ring-indigo-500">
                             <span class="ml-2 text-sm text-gray-700">Pengeluaran</span>
                         </label>
                     </div>
@@ -73,6 +77,26 @@
                 </div>
             </div>
         </form>
+
+        <div class="relative my-10">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-100"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-400">Atau Tambah Kategori Baru</span>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300">
+            <form action="{{ url('/kategori') }}" method="POST" class="flex flex-col md:flex-row gap-2">
+                @csrf
+                <input type="text" name="nama_kategori" required placeholder="Nama Kategori (misal: Kesehatan)" 
+                    class="flex-1 rounded-lg border-gray-300 shadow-sm p-2.5 text-sm border focus:ring-indigo-500">
+                <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-black transition">
+                    + Tambah
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 @endsection
