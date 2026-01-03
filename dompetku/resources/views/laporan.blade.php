@@ -60,11 +60,11 @@
             data: {
                 labels: ['Pemasukan', 'Pengeluaran', 'Tabungan'],
                 datasets: [{
-                    data: [{{ $pemasukan }}, {{ $pengeluaran }}, {{ $tabungan }}], // Silakan ganti dengan data dinamis dari Controller nanti
+                    data: [{{ $pemasukan }}, {{ $pengeluaran }}, {{ $tabungan }}], 
                     backgroundColor: [
-                        '#10b981', // Emerald 500 (Pemasukan)
-                        '#f43f5e', // Rose 500 (Pengeluaran)
-                        '#3b82f6'  // Blue 500 (Tabungan)
+                        '#10b981', 
+                        '#f43f5e', 
+                        '#3b82f6'  
                     ],
                     borderWidth: 0,
                     hoverOffset: 4
@@ -87,34 +87,30 @@
 
         // Konfigurasi Chart 2: Bar Chart
         const ctx2 = document.getElementById('weeklyChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
-                datasets: [{
-                    label: 'Pengeluaran (Rp)',
-                    data: [1200000, 900000, 850000, 1500000],
-                    backgroundColor: '#6366f1', // Indigo 500
-                    borderRadius: 6,
-                }]
+new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: @json($labels), 
+        datasets: [{
+            label: 'Pengeluaran (Rp)',
+            data: @json($values), 
+            backgroundColor: '#6366f1',
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: '#f3f4f6' }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f3f4f6' // Garis grid tipis
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+            x: {
+                grid: { display: false }
             }
-        });
+        }
+    }
+});
     </script>
 @endsection

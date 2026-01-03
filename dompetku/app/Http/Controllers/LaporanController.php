@@ -12,6 +12,16 @@ class LaporanController extends Controller
     $pengeluaran = Transaksi::where('jenis', 'pengeluaran')->sum('nominal');
     $tabungan = $pemasukan - $pengeluaran;
 
-    return view('laporan', compact('pemasukan', 'pengeluaran', 'tabungan'));
+    $dataGrafik = Transaksi::where('jenis', 'pengeluaran')
+        ->where('tanggal', '>=', now()->subDays(7))
+        ->selectRaw('tanggal, sum(nominal) as total')
+        ->groupBy('tanggal')
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $labels = $dataGrafik->pluck('tanggal')->toArray(); 
+    $values = $dataGrafik->pluck('total')->toArray();  
+
+    return view('laporan', compact('pemasukan', 'pengeluaran', 'tabungan', 'labels', 'values'));
 }
 }
